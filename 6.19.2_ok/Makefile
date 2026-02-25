@@ -1,6 +1,18 @@
+obj-m += pl2303.o
 
-obj-m	+= pl2303.o
+KDIR ?= /lib/modules/$(shell uname -r)/build
+PWD  := $(shell pwd)
+
 all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
+
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
+
+install: all
+	$(MAKE) -C $(KDIR) M=$(PWD) modules_install
+	depmod -a
+
+uninstall:
+	rm -f /lib/modules/$(shell uname -r)/extra/pl2303.ko*
+	depmod -a
